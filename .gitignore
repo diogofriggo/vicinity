@@ -1,5 +1,7 @@
 .vscode
 venv
 *__pycache__*
-ignore_for_now/
+data/
 NOTES.md
+encoding_finder.py
+development/

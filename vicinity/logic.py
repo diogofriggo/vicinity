@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
@@ -8,60 +9,37 @@ import plotly.graph_objects as go
 from vicinity.app import app
 from vicinity.core import read_cached_csv
 
-print('LOGIC.PY IS BEING IMPORTEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
 
-@app.callback(Output('x_col', 'options'),
-              Input('file_path', 'value'))
-def x_col_options(file_path):
-    return get_options(file_path)
+EARTH_RADIUS_KM = 12742 / 2
+LAT_COL = 'NumCoordNEmpreendimento'
+LON_COL = 'NumCoordEEmpreendimento'
 
 
-@app.callback(Output('columns', 'options'),
-              Input('file_path', 'value'))
-def columns_options(file_path):
-    return get_options(file_path)
-
-
-def get_options(file_path):
-    print(f'get_options({file_path})')
-    try:
-        df = try_read_cached_csv(file_path)
-        options = [{'label': c, 'value': c} for c in df]
-        return options
-    except:
-        return []
-
-
-@app.callback(Output('output', 'figure'),
+@app.callback([Output('table', 'data'), Output('table', 'columns')],
               Input('file_path', 'value'),
-              Input('columns', 'value'),
-              Input('x_col', 'value'),
-              Input('row_start', 'value'),
-              Input('row_end', 'value'))
-def output_figure(file_path, columns, x_col, row_start, row_end):
-    if row_start is None:
-        row_start = 0
-
+              Input('lat', 'value'),
+              Input('lon', 'value'),
+              Input('radius', 'value'))
+def table_data_columns(file_path, lat, lon, radius):
     df = try_read_cached_csv(file_path)
+    df[LAT_COL] = df[LAT_COL].str.replace(',', '.').astype(float)
+    df[LON_COL] = df[LON_COL].str.replace(',', '.').astype(float)
 
-    if row_end is None:
-        row_end = len(df)
+    radius = parse_float(radius)
+    if np.isnan(radius):
+        radius = EARTH_RADIUS_KM
 
-    x = df.index
-    if x_col is not None:
-        x = df[x_col]
+    lat = parse_float(lat)
+    lon = parse_float(lon)
+    if np.isnan(lat) or np.isnan(lon):
+        return transform_df_into_dash_data_table(df)
 
-    if columns is None or columns == []:
-        columns = df.columns
+    # TODO: calculate distances
 
-    figure = go.Figure()
-    sub_df = df.iloc[int(row_start):int(row_end)]
-    for col in columns:
-        y = sub_df[col]
-        trace = go.Scatter(x=x, y=y, name=col)
-        figure.add_trace(trace)
-
-    return figure
+def transform_df_into_dash_data_table(df):
+    data = df.to_dict('records')
+    columns = [{ 'name': c, 'id': c } for c in df]
+    return data, columns
 
 
 def try_read_cached_csv(file_path):
@@ -69,3 +47,10 @@ def try_read_cached_csv(file_path):
         return read_cached_csv(file_path)
     except:
         raise PreventUpdate
+
+
+def parse_float(lat_or_lon):
+    try:
+        return float(lat_or_lon)
+    except:
+        return np.nan

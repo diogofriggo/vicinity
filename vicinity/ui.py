@@ -1,10 +1,10 @@
-from dash import dcc
+from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 
 layout = dbc.Container([
     dbc.Row([
         dbc.Col([
-            dbc.Label('File path', html_for='file_path'),
+            dbc.Label('SIGA .csv address', html_for='file_path'),
             dbc.Input(
                 id='file_path',
                 persistence=True),
@@ -12,27 +12,21 @@ layout = dbc.Container([
     ]),
     dbc.Row([
         dbc.Col([
-            dbc.Label('Columns to plot', html_for='columns'),
-            dcc.Dropdown(id='columns', multi=True),
-        ], width=12),
+            dbc.Label('Latitude', html_for='lat'),
+            dbc.Input(id='lat'),
+        ], width=2),
+        dbc.Col([
+            dbc.Label('Longitude', html_for='lon'),
+            dbc.Input(id='lon'),
+        ], width=2),
+        dbc.Col([
+            dbc.Label('Radius (km)', html_for='radius'),
+            dbc.Input(id='radius'),
+        ], width=2),
     ]),
     dbc.Row([
         dbc.Col([
-            dbc.Label('X column (blank will default to df.index)', html_for='x_col'),
-            dcc.Dropdown(id='x_col', persistence=True),
-        ], width=4),
-        dbc.Col([
-            dbc.Label('Row start', html_for='row_start'),
-            dbc.Input(id='row_start', persistence=True),
-        ], width=1),
-        dbc.Col([
-            dbc.Label('Row end', html_for='row_end'),
-            dbc.Input(id='row_end', persistence=True),
-        ], width=1),
-    ]),
-    dbc.Row([
-        dbc.Col([
-            dcc.Graph(id='output', style={'margin-top': '3px'})
+            dash_table.DataTable(id='table')
         ], width=12),
-    ]),
+    ], style={'margin-top': '10px'}),
 ], fluid=True)
