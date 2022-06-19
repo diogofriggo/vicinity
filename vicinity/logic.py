@@ -3,20 +3,24 @@ from pathlib import Path
 import pandas as pd
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
-import plotly.graph_objects as go # pip install plotly==4.11.0
+import plotly.graph_objects as go
 
 from vicinity.app import app
 from vicinity.core import read_cached_csv
+
+print('LOGIC.PY IS BEING IMPORTEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
 
 @app.callback(Output('x_col', 'options'),
               Input('file_path', 'value'))
 def x_col_options(file_path):
     return get_options(file_path)
 
+
 @app.callback(Output('columns', 'options'),
               Input('file_path', 'value'))
 def columns_options(file_path):
     return get_options(file_path)
+
 
 def get_options(file_path):
     print(f'get_options({file_path})')
@@ -26,6 +30,7 @@ def get_options(file_path):
         return options
     except:
         return []
+
 
 @app.callback(Output('output', 'figure'),
               Input('file_path', 'value'),
@@ -57,6 +62,7 @@ def output_figure(file_path, columns, x_col, row_start, row_end):
         figure.add_trace(trace)
 
     return figure
+
 
 def try_read_cached_csv(file_path):
     try:
