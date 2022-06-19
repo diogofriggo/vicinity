@@ -1,8 +1,6 @@
 from dash import dcc
 import dash_bootstrap_components as dbc
 
-# from vicinity.core import get_source_data_path
-
 layout = dbc.Container([
     dbc.Row([
         dbc.Col([
@@ -10,7 +8,6 @@ layout = dbc.Container([
             dbc.Input(
                 id='file_path',
                 persistence=True),
-                # value=get_source_data_path()),
         ], width=12),
     ]),
     dbc.Row([

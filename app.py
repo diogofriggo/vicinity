@@ -4,6 +4,7 @@ import gunicorn # whilst your local machine's webserver doesn't need this, Herok
 from whitenoise import WhiteNoise # for serving static files on Heroku
 
 from vicinity.ui import layout
+from vicinity.logic import *
 
 # AVAILABLE THEMES:
 # CERULEAN , COSMO , CYBORG , DARKLY , FLATLY , JOURNAL , LITERA , LUMEN ,
