@@ -9,7 +9,7 @@ from vicinity.app import app
 # All callbacks must be defined before the server starts
 
 app.layout = layout
-app.title = 'Vicinity'
+app.title = 'Vicinanza'
 
 server = app.server
 server.wsgi_app = WhiteNoise(server.wsgi_app, root='static/')
