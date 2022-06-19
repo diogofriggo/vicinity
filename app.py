@@ -4,7 +4,6 @@ import gunicorn # whilst your local machine's webserver doesn't need this, Herok
 from whitenoise import WhiteNoise # for serving static files on Heroku
 
 from vicinity.ui import layout
-from vicinity.logic import *
 
 # AVAILABLE THEMES:
 # CERULEAN , COSMO , CYBORG , DARKLY , FLATLY , JOURNAL , LITERA , LUMEN ,
@@ -19,4 +18,5 @@ server = app.server
 server.wsgi_app = WhiteNoise(server.wsgi_app, root='static/')
 
 if __name__ == '__main__':
-    app.run_server(debug=False, host='0.0.0.0', port=8050)
+    from vicinity.logic import * # if outside this branch we get a circular dependency (logic imports app)
+    app.run_server(debug=True, host='0.0.0.0', port=8050)

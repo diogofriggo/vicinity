@@ -5,44 +5,24 @@ from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 import plotly.graph_objects as go # pip install plotly==4.11.0
 
-import sys
-print(sys.path)
-
-from vicinity.app import app
-from vicinity.core import cached_read_csv
+from app import app
+from vicinity.core import read_cached_csv
 
 @app.callback(Output('x_col', 'options'),
               Input('file_path', 'value'))
 def x_col_options(file_path):
-    try:
-        if file_path is None:
-            raise PreventUpdate
-
-        file_path = Path(file_path)
-
-        if not file_path.exists():
-            raise PreventUpdate
-
-        df = cached_read_csv(file_path)
-        options = [{'label': c, 'value': c} for c in df]
-        return options
-    except:
-        return []
+    return get_options(file_path)
 
 
 @app.callback(Output('columns', 'options'),
               Input('file_path', 'value'))
 def columns_options(file_path):
+    return get_options(file_path)
+
+def get_options(file_path):
+    print(f'get_options({file_path})')
     try:
-        if file_path is None:
-            raise PreventUpdate
-
-        file_path = Path(file_path)
-
-        if not file_path.exists():
-            raise PreventUpdate
-
-        df = cached_read_csv(file_path)
+        df = try_read_cached_csv(file_path)
         options = [{'label': c, 'value': c} for c in df]
         return options
     except:
@@ -55,18 +35,10 @@ def columns_options(file_path):
               Input('row_start', 'value'),
               Input('row_end', 'value'))
 def output_figure(file_path, columns, x_col, row_start, row_end):
-    if file_path is None:
-        raise PreventUpdate
-
-    file_path = Path(file_path)
-
-    if not file_path.exists():
-        raise PreventUpdate
-
     if row_start is None:
         row_start = 0
 
-    df = cached_read_csv(file_path)
+    df = try_read_cached_csv(file_path)
 
     if row_end is None:
         row_end = len(df)
@@ -86,3 +58,9 @@ def output_figure(file_path, columns, x_col, row_start, row_end):
         figure.add_trace(trace)
 
     return figure
+
+def try_read_cached_csv(file_path):
+    try:
+        return read_cached_csv(file_path)
+    except:
+        raise PreventUpdate
