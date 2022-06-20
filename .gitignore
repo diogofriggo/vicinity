@@ -1,7 +1,6 @@
 .vscode
 venv
 *__pycache__*
-data/
 NOTES.md
 encoding_finder.py
 development/

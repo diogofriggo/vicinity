@@ -38,6 +38,8 @@ def transform_df_into_dash_data_table(df):
 
 
 def try_read_cached_csv(file_path):
+    test_df = core.read_cached_csv('data/siga-empreendimentos-geracao.csv')
+    print(test_df)
     try:
         return core.read_cached_csv(file_path)
     except:
