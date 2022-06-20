@@ -5,3 +5,4 @@ data/
 NOTES.md
 encoding_finder.py
 development/
+.coverage
