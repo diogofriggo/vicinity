@@ -53,10 +53,3 @@ def positive_bearing_degrees(bearing_degrees):
     if bearing_degrees < 0.0:
         return bearing_degrees + 180.0
     return bearing_degrees
-
-# TODO: default values
-# TODO: serve .csv statically, start-up time is key
-# TODO: text representation of bearing (degrees) Northeast of the project
-# TODO: select a few columns: windfarm name, distance, text bearing, (start of operation or phase)
-# TODO: copy table into word/excel/text
-# TODO: kmz
