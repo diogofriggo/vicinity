@@ -7,34 +7,29 @@ from dash.exceptions import PreventUpdate
 import plotly.graph_objects as go
 
 from vicinity.app import app
-from vicinity.core import read_cached_csv
-
-
-EARTH_RADIUS_KM = 12742 / 2
-LAT_COL = 'NumCoordNEmpreendimento'
-LON_COL = 'NumCoordEEmpreendimento'
+from vicinity import core
 
 
 @app.callback([Output('table', 'data'), Output('table', 'columns')],
               Input('file_path', 'value'),
-              Input('lat', 'value'),
-              Input('lon', 'value'),
-              Input('radius', 'value'))
-def table_data_columns(file_path, lat, lon, radius):
+              Input('lat_degrees', 'value'),
+              Input('lon_degrees', 'value'),
+              Input('radius_km', 'value'))
+def table_data_columns(file_path, lat_degrees, lon_degrees, radius_km):
     df = try_read_cached_csv(file_path)
-    df[LAT_COL] = df[LAT_COL].str.replace(',', '.').astype(float)
-    df[LON_COL] = df[LON_COL].str.replace(',', '.').astype(float)
 
-    radius = parse_float(radius)
-    if np.isnan(radius):
-        radius = EARTH_RADIUS_KM
+    radius_km = parse_float(radius_km)
+    if np.isnan(radius_km):
+        radius_km = core.EARTH_DIAMETER_KM / 2.0
 
-    lat = parse_float(lat)
-    lon = parse_float(lon)
-    if np.isnan(lat) or np.isnan(lon):
+    lat_degrees = parse_float(lat_degrees)
+    lon_degrees = parse_float(lon_degrees)
+    if np.isnan(lat_degrees) or np.isnan(lon_degrees):
         return transform_df_into_dash_data_table(df)
 
-    # TODO: calculate distances
+    df = core.compute_vicinity(df, lat_degrees, lon_degrees, radius_km)
+    return transform_df_into_dash_data_table(df)
+
 
 def transform_df_into_dash_data_table(df):
     data = df.to_dict('records')
@@ -44,13 +39,13 @@ def transform_df_into_dash_data_table(df):
 
 def try_read_cached_csv(file_path):
     try:
-        return read_cached_csv(file_path)
+        return core.read_cached_csv(file_path)
     except:
         raise PreventUpdate
 
 
-def parse_float(lat_or_lon):
+def parse_float(value):
     try:
-        return float(lat_or_lon)
+        return float(value)
     except:
         return np.nan
